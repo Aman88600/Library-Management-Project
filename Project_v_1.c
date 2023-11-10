@@ -29,7 +29,7 @@ int main(void)
             printf("Your name is %s\n", name);
             // Frees the memory
             free(name);
-            printf("Your name is %s", name);
+            printf("Your book name is %s", name);
         }
     } while (response == 1);
     return 0;
