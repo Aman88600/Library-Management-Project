@@ -26,10 +26,10 @@ int main(void)
             char *name = (char *)malloc(strlen(buffer) + 1);
             // Sets the value
             strcpy(name, buffer);
-            printf("Your name is %s\n", name);
+            printf("Your book name is %s\n", name);
             // Frees the memory
             free(name);
-            printf("Your name is %s", name);
+            printf("Your book name is %s", name);
         }
     } while (response == 1);
     return 0;
