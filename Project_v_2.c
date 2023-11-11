@@ -31,19 +31,43 @@ int main(void)
             // Saving inputs in text file
             FILE *fptr;
 
-            fptr = fopen("Project_v_2.txt", "w");
-
+            fptr = fopen("Project_v_2.txt", "a");
+            long size = 0;
             // Checking if the file is made of not
-            if (fptr == NULL)
+            if (fptr)
             {
-                printf("File not created/opened");
+                // File is open
+                fseek(fptr, 0, SEEK_END);
+                size = ftell(fptr);
+                if (size == 0)
+                {
+                    // File is closed in read mode
+                    fclose(fptr);
+                    // File is opned in write mode
+                    fptr = fopen("Project_v_2.txt", "w");
+                    fprintf(fptr, "Book name is %s", Book);
+                    fprintf(fptr, "Book quantity is %i", quantity);
+                    // File is closed in write mode
+                    fclose(fptr);
+                }
+                else
+                {
+                    // File is closed in read mode
+                    fclose(fptr);
+                    // File is opned in append mode
+                    fptr = fopen("Project_v_2.txt", "a");
+                    fprintf(fptr, "\nBook name is %s", Book);
+                    fprintf(fptr, "Book quantity is %i", quantity);
+                    // File is closed in append mode
+                    fclose(fptr);
+                }
             }
 
             // Writing in the file
-            fprintf(fptr, "Book name is %s", Book);
-            fprintf(fptr, "Book quantity is %i", quantity);
+            // fprintf(fptr, "Book name is %s", Book);
+            // fprintf(fptr, "Book quantity is %i", quantity);
             // Closing the file
-            fclose(fptr);
+            // fclose(fptr);
         }
     } while (response == 1);
     return 0;
