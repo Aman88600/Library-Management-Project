@@ -10,7 +10,8 @@ try:
         user_choice = int(input("""
         Enter 1 to Add book 
         Enter 2 to delete book
-        Enter 3 to see all books : """))
+        Enter 3 to see all books
+        Enter 4 to issue book: """))
 
         if (user_choice == 1):
             book_name = input("Enter Book name: ")
@@ -28,6 +29,17 @@ try:
             print(res.fetchall())
 
         elif (user_choice == 3):
+            res = cur.execute("SELECT * FROM Books")
+            print(res.fetchall())
+
+        elif (user_choice == 4):
+            book_name = str(input("Enter Book name: "))
+            res = cur.execute(f"SELECT Quantity FROM Books WHERE Name = '{book_name}'")
+            new_q = res.fetchall()
+            new_qunatity = int(new_q[0][0])
+            new_qunatity -= 1
+            cur.execute(f"UPDATE Books SET Quantity = {new_qunatity} WHERE Name = '{book_name}'")
+            con.commit()  # Commit changes to the database
             res = cur.execute("SELECT * FROM Books")
             print(res.fetchall())
         keep_going = int(input(f"Enter 1 to continue 0 to exit : "))
