@@ -1,5 +1,5 @@
 import sqlite3
-
+import datetime
 try:
     con = sqlite3.connect("Library_Management.db")
     cur = con.cursor()
@@ -14,7 +14,8 @@ try:
         Enter 4 to issue book
         Enter 5 to Add Member:
         Enter 6 to Delete Member
-        Enter 7 to See all Members"""))
+        Enter 7 to See all Members
+        Enter 8 to See all the records"""))
 
         if (user_choice == 1):
             book_name = input("Enter Book name: ")
@@ -50,6 +51,7 @@ try:
                 new_qunatity = int(new_q[0][0])
                 new_qunatity -= 1
                 cur.execute(f"UPDATE Books SET Quantity = {new_qunatity} WHERE Name = '{book_name}'")
+                cur.execute("INSERT INTO Records (Book_Name, Member_Name, Issue_time) VALUES (?, ?, ?)", (book_name, Member_name, datetime.datetime.now()))
                 con.commit()  # Commit changes to the database
             else:
                 print(f"Issue Cancelled, Member doesn't exist")
@@ -73,6 +75,10 @@ try:
 
         elif (user_choice == 7):
             res = cur.execute("SELECT * FROM Members")
+            print(res.fetchall())
+
+        elif (user_choice == 8):
+            res = cur.execute("SELECT * FROM Records")
             print(res.fetchall())
         keep_going = int(input("Enter 1 to continue 0 to exit : "))
 except sqlite3.Error as e:
