@@ -1,44 +1,117 @@
 from tkinter import *
+from tkinter import simpledialog,messagebox
 import sqlite3
 import datetime
 
 con = sqlite3.connect("Library_Management.db")
 cur = con.cursor()
 
-# Avaliable books
-def See_Avaliable_Books():
-    # Getting data
-    res = cur.execute("SELECT * FROM Books")
-    records_data = res.fetchall()
 
-    # Create a new window
-    See_Avaliable_Books_window = Toplevel(root)
-    See_Avaliable_Books_window.geometry("500x500")
+# See Avaliable Books
+def See_Books_function():
+    See_Books_window = Toplevel(root)
+    See_Books_window.geometry("500x500")
 
-    # Specify Grid for the new window
-    Grid.rowconfigure(See_Avaliable_Books_window, 0, weight=1)
+    # Get all the books from the database
+    all_books_data = cur.execute("SELECT * FROM Books")
+    # Making data readable
+    all_books_data_readable = all_books_data.fetchall()
+    # Option 1
+    counter = 0
+    Grid.columnconfigure(See_Books_window, 0, weight=1)
+    for i in all_books_data_readable:
+        Grid.rowconfigure(See_Books_window, int(counter), weight=1)
+        first_book = Label(See_Books_window, text=f"Name : {i[0]}, Quantity : {i[1]}, Issued : {i[2]}")
+        first_book.grid(row = int(counter), column = 0, sticky = "NSEW")
+        counter += 1
+    # Option 2
+    # Grid.columnconfigure(See_Books_window, 0, weight=1)
+    # Grid.rowconfigure(See_Books_window, 0, weight=1)
+    # Grid.rowconfigure(See_Books_window, 1, weight=1)
+    # book_name_lable = Label(See_Books_window, text="Search For Books")
+    # book_name_lable.grid(row = 0, column = 0, sticky = "NSEW")
+    # book_name = Entry(See_Books_window)
+    # book_name.grid(row = 0, column = 1, sticky = "NSEW")
 
-    # Create labels for each record
-    for i, record in enumerate(records_data):
-        record_label = Label(See_Avaliable_Books_window, text=f"Record {i + 1}: {record}")
-        record_label.grid(row=i, column=0, sticky="W", pady=5, padx=10)
 
-        # Adjust the grid row configuration for each label
-        Grid.rowconfigure(See_Avaliable_Books_window, i, weight=1)
 
-    # Adjust column weight to allow the labels to expand horizontally
-    Grid.columnconfigure(See_Avaliable_Books_window, 0, weight=1)
 
-# See all members
-# def see_all_members():
 
-#     # Getting data  
-#     res = cur.execute("SELECT * FROM Members")
-#     records_data = res.fetchall()
 
-#     # Create a new window
-#     See_Avaliable_Member_window = Toplevel(root)
-#     See_Avaliable_Member_window.geometry("500x500")
+# Add Book
+def Add_Book_function():
+    Add_Book_window = Toplevel(root)
+    Add_Book_window.geometry("300x150")
+
+    # Create labels and entry widgets
+    label_name = Label(Add_Book_window, text="Book Name:")
+    label_name.grid(row=0, column=0, pady=5, padx=10, sticky="E")
+
+    entry_name = Entry(Add_Book_window)
+    entry_name.grid(row=0, column=1, pady=5, padx=10, sticky="W")
+
+    label_quantity = Label(Add_Book_window, text="Quantity:")
+    label_quantity.grid(row=1, column=0, pady=5, padx=10, sticky="E")
+
+    entry_quantity = Entry(Add_Book_window)
+    entry_quantity.grid(row=1, column=1, pady=5, padx=10, sticky="W")
+
+    # Function to add book to the database
+    def add_book_to_database():
+        book_name = entry_name.get()
+        book_quantity = entry_quantity.get()
+
+        if book_name and book_quantity:
+            # Insert the book into the database
+            cur.execute("INSERT INTO Books (name, quantity, Issued) VALUES (?, ?, ?)", (book_name, book_quantity, 0))
+            con.commit()
+            messagebox.showinfo("Success", "Book added successfully!")
+            Add_Book_window.destroy()
+        else:
+            messagebox.showwarning("Warning", "Book name and quantity are required.")
+
+    # Create a button to execute the function
+    add_button = Button(Add_Book_window, text="Add Book", command=add_book_to_database)
+    add_button.grid(row=2, column=0, columnspan=2, pady=10)
+
+
+def Delete_Book_function():
+    Delete_Book_window = Toplevel(root)
+    Delete_Book_window.geometry("300x150")
+
+    # Create labels and entry widgets
+    label_name = Label(Delete_Book_window, text="Book Name:")
+    label_name.grid(row=0, column=0, pady=5, padx=10, sticky="E")
+
+    entry_name = Entry(Delete_Book_window)
+    entry_name.grid(row=0, column=1, pady=5, padx=10, sticky="W")
+
+    # Function to delete book from the database
+    def delete_book_from_database():
+        book_name = entry_name.get()
+
+        if book_name:
+            # Check if the book exists in the database
+            cur.execute("SELECT * FROM Books WHERE name=?", (book_name,))
+            existing_book = cur.fetchone()
+
+            if existing_book:
+                # Delete the book from the database
+                cur.execute("DELETE FROM Books WHERE name=?", (book_name,))
+                con.commit()
+                messagebox.showinfo("Success", "Book deleted successfully!")
+                Delete_Book_window.destroy()
+            else:
+                messagebox.showwarning("Warning", f"Book with name '{book_name}' not found.")
+        else:
+            messagebox.showwarning("Warning", "Book name is required.")
+
+    # Create a button to execute the function
+    delete_button = Button(Delete_Book_window, text="Delete Book", command=delete_book_from_database)
+    delete_button.grid(row=1, column=0, columnspan=2, pady=10)
+
+
+
 
 def create_books_window():
     books_window = Toplevel(root)
@@ -52,14 +125,20 @@ def create_books_window():
     Grid.rowconfigure(books_window, 2, weight=1)
 
     # Create new Buttons on the new window
-    See_Books = Button(books_window, text="See Available Books", command=See_Avaliable_Books)
+    See_Books = Button(books_window, text="See Available Books", command=See_Books_function)
     See_Books.grid(row=0, column=0, sticky="NSEW")
 
-    Add_Book = Button(books_window, text="Add Book")
+    Add_Book = Button(books_window, text="Add Book", command=Add_Book_function)
     Add_Book.grid(row=1, column=0, sticky="NSEW")
 
-    Delete_Book = Button(books_window, text="Delete Book")
+    Delete_Book = Button(books_window, text="Delete Book", command=Delete_Book_function)
     Delete_Book.grid(row=2, column=0, sticky="NSEW")
+
+
+
+
+
+
 
 def create_members_window():
     members_window = Toplevel(root)
