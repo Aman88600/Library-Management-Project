@@ -36,7 +36,58 @@ def See_Books_function():
 
 
 
+def issue_book_function():
+    # Create a Toplevel window for input
+    input_window = Toplevel()
+    input_window.title("Issue Book")
+    input_window.geometry("300x120")
 
+    # Create labels and entry widgets for book and member names
+    label_book = Label(input_window, text="Book Name:")
+    label_book.grid(row=0, column=0, padx=10, pady=5, sticky="E")
+
+    entry_book = Entry(input_window)
+    entry_book.grid(row=0, column=1, padx=10, pady=5, sticky="W")
+
+    label_member = Label(input_window, text="Member Name:")
+    label_member.grid(row=1, column=0, padx=10, pady=5, sticky="E")
+
+    entry_member = Entry(input_window)
+    entry_member.grid(row=1, column=1, padx=10, pady=5, sticky="W")
+
+    # Function to handle book issuance
+    def issue_book():
+        book_name = entry_book.get()
+        member_name = entry_member.get()
+
+        if book_name and member_name:
+            # Check if the book is available
+            cur.execute("SELECT * FROM Books WHERE name=? AND quantity>0", (book_name,))
+            available_book = cur.fetchone()
+
+            if available_book:
+                # Update the Books table
+                cur.execute("UPDATE Books SET quantity = quantity - 1, Issued = Issued + 1 WHERE name=?", (book_name,))
+                con.commit()
+
+                # Update the Records table
+                current_time = datetime.datetime.now()
+                cur.execute("INSERT INTO Records (Book_Name, Member_Name, Issue_time, Action) VALUES (?, ?, ?, ?)",
+                            (book_name, member_name, current_time, "Issue"))
+                con.commit()
+
+                messagebox.showinfo("Success", f"{book_name} issued to {member_name} successfully!")
+                input_window.destroy()
+            else:
+                messagebox.showwarning("Warning", f"{book_name} is not available for issuance.")
+        else:
+            messagebox.showwarning("Warning", "Both book name and member name are required.")
+
+    # Create a button to execute the issuance
+    issue_button = Button(input_window, text="Issue Book", command=issue_book)
+    issue_button.grid(row=2, column=0, columnspan=2, pady=10)
+
+    input_window.mainloop()
 
 # Add Book
 def Add_Book_function():
@@ -123,6 +174,7 @@ def create_books_window():
 
     Grid.rowconfigure(books_window, 1, weight=1)
     Grid.rowconfigure(books_window, 2, weight=1)
+    Grid.rowconfigure(books_window, 3, weight=1)
 
     # Create new Buttons on the new window
     See_Books = Button(books_window, text="See Available Books", command=See_Books_function)
@@ -133,6 +185,9 @@ def create_books_window():
 
     Delete_Book = Button(books_window, text="Delete Book", command=Delete_Book_function)
     Delete_Book.grid(row=2, column=0, sticky="NSEW")
+
+    Issue_book = Button(books_window, text="Issue Book", command=issue_book_function)
+    Issue_book.grid(row=3, column=0, sticky="NSEW")
 
 
 

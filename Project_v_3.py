@@ -11,7 +11,9 @@ try:
         Enter 1 to Add book 
         Enter 2 to delete book
         Enter 3 to see all books
-        Enter 4 to issue book: """))
+        Enter 4 to issue book
+        Enter 5 to Add Member:
+        Enter 6 to Delete Member"""))
 
         if (user_choice == 1):
             book_name = input("Enter Book name: ")
@@ -42,7 +44,22 @@ try:
             con.commit()  # Commit changes to the database
             res = cur.execute("SELECT * FROM Books")
             print(res.fetchall())
-        keep_going = int(input(f"Enter 1 to continue 0 to exit : "))
+        
+
+        elif (user_choice == 5):
+            Member_name = input("Enter new Member name : ")
+            cur.execute("INSERT INTO Members (Name) VALUES (?);", (Member_name,))
+            con.commit()  # Commit changes to the database
+            res = cur.execute("SELECT * FROM Members")
+            print(res.fetchall())
+
+        elif(user_choice == 6):
+            Member_name = str(input("Enter Member name: "))
+            cur.execute(f"DELETE FROM Members WHERE Name = '{Member_name}'")
+            con.commit()  # Commit changes to the database
+            res = cur.execute("SELECT * FROM Members")
+            print(res.fetchall())
+        keep_going = int(input("Enter 1 to continue 0 to exit : "))
 except sqlite3.Error as e:
     print("SQLite error:", e)
 

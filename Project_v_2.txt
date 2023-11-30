@@ -1,2 +1,8 @@
 Book name is I want to eat your pancreas
+Book quantity is 12
+Book name is Crime and punishment
 Book quantity is 10
+Book name is Man's search for meaning
+Book quantity is 20
+Book name is A silent voice
+Book quantity is 15

@@ -20,7 +20,7 @@ try:
         if (user_choice == 1):
             book_name = input("Enter Book name: ")
             book_quantity = int(input("Enter Book quantity: "))
-            cur.execute("INSERT INTO Books (Name, Quantity) VALUES (?, ?)", (book_name, book_quantity))
+            cur.execute("INSERT INTO Books (Name, Quantity) VALUES (?, ?, ?)", (book_name, book_quantity, 0))
             con.commit()  # Commit changes to the database
             res = cur.execute("SELECT * FROM Books")
             print(res.fetchall())
