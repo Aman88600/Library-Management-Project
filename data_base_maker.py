@@ -34,9 +34,11 @@ CREATE TABLE Records (
     Book_Name varchar(30),
     Member_Name varchar(30),
     Issue_time timestamp,
-    Action varchar(20)
+    Action varchar(20),
+    Fine float
 );
 """
+
 
 # Execute the SQL statements to create tables
 cursor.execute(create_books_table)

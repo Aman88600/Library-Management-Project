@@ -77,17 +77,24 @@ def return_book_function(book_name):
                 con.commit()
 
                 current_time = datetime.datetime.now()
-                cur.execute("INSERT INTO Records (Book_Name, Member_Name, Issue_time, Action) VALUES (?, ?, ?, ?)",
-                            (book_name, member_name, current_time, "Return"))
+                issue_time = datetime.datetime.strptime(issued_record[2], "%Y-%m-%d %H:%M:%S.%f")
+
+                # Calculate the fine based on the duration
+                duration = current_time - issue_time
+                fine = 1 + max(0, (duration.days - 1))  # $1 for default, $1 for each day after
+
+                cur.execute("INSERT INTO Records (Book_Name, Member_Name, Issue_time, Action, Fine) VALUES (?, ?, ?, ?, ?)",
+                            (book_name, member_name, current_time, "Return", fine))
                 con.commit()
 
-                messagebox.showinfo("Success", f"{book_name} returned by {member_name} successfully!")
+                messagebox.showinfo("Success", f"{book_name} returned by {member_name} successfully!\nFine: ${fine}")
             else:
                 messagebox.showwarning("Warning", f"{book_name} is not issued to {member_name}.")
         else:
             messagebox.showwarning("Warning", f"{member_name} is not a registered member. Please register first.")
     else:
         messagebox.showwarning("Warning", "Member's name is required.")
+
 
 
 
