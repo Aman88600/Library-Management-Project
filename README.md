@@ -2,4 +2,4 @@
 # 1. You Should have the python intrepreter on your machine
 # 2. Do git clone https://github.com/Aman88600/Library-Management-Project.git
 # 3. run the Run_Project.bat (Only Once)
-# 4. Then just Open your app by double clicking on it
+# 4. Then just Open your app (Prohect_v_6.py) by double clicking on it
